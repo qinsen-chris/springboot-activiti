@@ -34,6 +34,14 @@ public interface IWorkflowService {
 
 	void saveStartProcess(Long id);
 
+	/**
+	 * 消息开始事件启动流程
+	 * @param messageName
+	 * @param businessKey
+	 * @param variables
+	 */
+	void startProcessInstanceByMessage(String messageName,String businessKey,Map<String,Object> variables);
+
 	List<Task> findTaskListByName(String name);
 
 	String findTaskFormKeyByTaskId(String taskId);

@@ -128,6 +128,11 @@ public class WorkflowServiceImpl implements IWorkflowService {
 		runtimeService.startProcessInstanceByKey(key,objId,variables);
 		
 	}
+
+	@Override
+	public void startProcessInstanceByMessage(String messageName,String businessKey,Map<String,Object> variables) {
+		runtimeService.startProcessInstanceByMessage(messageName,businessKey,variables);
+	}
 	
 	/**2：使用当前用户名查询正在执行的任务表，获取当前任务的集合List<Task>*/
 	@Override

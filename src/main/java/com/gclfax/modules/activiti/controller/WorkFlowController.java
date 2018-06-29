@@ -134,7 +134,8 @@ public class WorkFlowController extends AbstractController {
     public R listTask(@RequestParam Map<String, Object> params){
         Query query = new Query(params);
         //1：从Session中获取当前用户名
-        String name = getUser().getUsername();
+        //String name = getUser().getUsername();
+        String name = (String)params.get("username");
         //2：使用当前用户名查询正在执行的任务表，获取当前任务的集合List<Task>
         List<Task> list = workflowService.findTaskListByName(name);
         List<Map<String,Object>> jsonList = new ArrayList<>();

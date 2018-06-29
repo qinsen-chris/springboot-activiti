@@ -23,73 +23,79 @@
 <body>
 <div id="rrapp" v-cloak>
 	<div v-show="showList">
-		<a v-if="hasPermission('pactDict:save')" class="btn btn-primary" @click="complete"><i class="fa fa-trash-o"></i>&nbsp;申请办理</a>
-	    <table id="jqGrid"></table>
+		<div class="grid-btn">
+			<div class="form-group col-sm-2" >
+				<input type="text"  v-model="q.username" @keyup.enter="query" placeholder="用户名">
+			</div>
+			<a class="btn btn-default" @click="query">查询</a>
+			<a v-if="hasPermission('pactDict:save')" class="btn btn-primary" @click="complete"><i class="fa fa-trash-o"></i>&nbsp;申请办理</a>
+		</div>
+		<table id="jqGrid"></table>
 	    <div id="jqGridPager"></div>
     </div>
 
 	<div v-show="!showList" class="panel panel-default">
-	<div class="panel-heading">{{title}}</div>
-	<form class="form-horizontal">
-		<div class="form-group">
-			<div class="col-sm-2 control-label">开始时间</div>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" v-model="leaveBill.leaveDate" placeholder="开始时间"/>
-			</div>
-		</div><div class="form-group">
-			<div class="col-sm-2 control-label">请假天数</div>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" v-model="leaveBill.days" placeholder="天数"/>
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2 control-label">请假内容</div>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" v-model="leaveBill.content" placeholder="请假内容"/>
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2 control-label">备注</div>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" v-model="leaveBill.remark" placeholder="备注"/>
-			</div>
-		</div>
+		<div class="panel-heading">{{title}}</div>
+			<form class="form-horizontal">
+				<div class="form-group">
+					<div class="col-sm-2 control-label">开始时间</div>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" v-model="leaveBill.leaveDate" placeholder="开始时间"/>
+					</div>
+				</div><div class="form-group">
+					<div class="col-sm-2 control-label">请假天数</div>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" v-model="leaveBill.days" placeholder="天数"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2 control-label">请假内容</div>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" v-model="leaveBill.content" placeholder="请假内容"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2 control-label">备注</div>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" v-model="leaveBill.remark" placeholder="备注"/>
+					</div>
+				</div>
 
-		<table class="tableAll" id="table02" rules="all">
-			<tr>
-				<td style="width: 16.4%">时间</td>
-				<td style="width: 16.4%">批注人</td>
-				<td style="width: 16.4%">批注</td>
-			</tr>
-			<tr  v-for="(_ ,index) in commentList">
-				<td style="width: 16.4%">{{_.time}}</td>
-				<td style="width: 16.4%">{{_.userId}}</td>
-				<td style="text-align: left; background: #fff;">
-					{{_.fullMessage}}
-				</td>
-			</tr>
-		</table>
-		<h2>批注</h2>
-		<div class="form-group">
-			<div class="col-sm-2 control-label">批注</div>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" v-model="params.comment" placeholder="批注"/>
-			</div>
-		</div>
+				<table class="tableAll" id="table02" rules="all">
+					<tr>
+						<td style="width: 16.4%">时间</td>
+						<td style="width: 16.4%">批注人</td>
+						<td style="width: 16.4%">批注</td>
+					</tr>
+					<tr  v-for="(_ ,index) in commentList">
+						<td style="width: 16.4%">{{_.time}}</td>
+						<td style="width: 16.4%">{{_.userId}}</td>
+						<td style="text-align: left; background: #fff;">
+							{{_.fullMessage}}
+						</td>
+					</tr>
+				</table>
+				<h2>批注</h2>
+				<div class="form-group">
+					<div class="col-sm-2 control-label">批注</div>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" v-model="params.comment" placeholder="批注"/>
+					</div>
+				</div>
 
-		<div class="form-group">
-			<div class="col-sm-2 control-label"></div>
-			<div class="col-sm-8" v-for="(arr ,index) in outcomeList">
-				<input type="button" class="btn btn-primary" @click="saveOrUpdate(arr)" :value="arr"/>
-			</div>
-			<div class="col-sm-2">
-				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
-			</div>
+				<div class="form-group">
+					<div class="col-sm-2 control-label"></div>
+					<div class="col-sm-8" v-for="(arr ,index) in outcomeList">
+						<input type="button" class="btn btn-primary" @click="saveOrUpdate(arr)" :value="arr"/>
+					</div>
+					<div class="col-sm-2">
+						&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+					</div>
 
+				</div>
+			</form>
 		</div>
-	</form>
 	</div>
-</div>
 
 <script src="../../js/modules/activiti/taskList.js"></script>
 </body>
