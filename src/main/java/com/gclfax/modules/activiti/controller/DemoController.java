@@ -44,6 +44,31 @@ public class DemoController  extends AbstractController{
     private TaskService taskService;    
     @Autowired
     private IdentityService identityService;
+
+	@RequestMapping("/deployTest")
+	@RequiresPermissions("pactDict:save")
+	public void deployTest() {
+
+		//根据bpmn文件部署流程
+		Deployment deployment = repositoryService.createDeployment().addClasspathResource("processes/myProcess1.bpmn").deploy();
+		//获取流程定义
+		ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()).singleResult();
+
+		//在部署流程定义和启动流程实例的中间，设置组任务的办理人，向Activity表中存放组和用户的信息
+		GroupEntity group1 = new GroupEntity();
+		group1.setName("员工");
+		GroupEntity group2 = new GroupEntity();
+		group2.setName("经理");
+		identityService.saveGroup(group1);//建立组
+		identityService.saveGroup(group2);//建立组
+		identityService.saveUser(new UserEntity("小张"));
+		identityService.saveUser(new UserEntity("李总"));
+		identityService.createMembership("小张", "部门经理");//建立组和用户关系
+		identityService.createMembership("李总", "部门经理");//建立组和用户关系
+
+	}
+
+
       
     @RequestMapping("/firstDemo")  
     @RequiresPermissions("pactDict:save")
@@ -55,14 +80,16 @@ public class DemoController  extends AbstractController{
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()).singleResult();  
 		
         //在部署流程定义和启动流程实例的中间，设置组任务的办理人，向Activity表中存放组和用户的信息
-/*        identityService.saveGroup(new Group);//建立组
-		identityService.saveGroup(new Group("总经理"));//建立组
+		GroupEntity group1 = new GroupEntity();
+		group1.setName("员工");
+		GroupEntity group2 = new GroupEntity();
+		group2.setName("经理");
+        identityService.saveGroup(group1);//建立组
+		identityService.saveGroup(group2);//建立组
 		identityService.saveUser(new UserEntity("小张"));
 		identityService.saveUser(new UserEntity("李总"));
-		identityService.saveUser(new UserEntity("王总"));*/
 		identityService.createMembership("小张", "部门经理");//建立组和用户关系
 		identityService.createMembership("李总", "部门经理");//建立组和用户关系
-		identityService.createMembership("王总", "总经理");//建立组和用户关系
 
         //启动流程定义，返回流程实例  
         ProcessInstance pi = runtimeService.startProcessInstanceById(processDefinition.getId());  

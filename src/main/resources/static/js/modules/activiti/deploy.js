@@ -44,21 +44,53 @@ var vm = new Vue({
             name: null
         },
         showList: true,
+        zipDeploy:false,
         title:null,
         deploy:{
-        	name:null,
-			file:null
+        	fileName:null,
+			processName:null,
+			flag:null
         }
     },
     methods: {
         query: function () {
             vm.reload();
         },
-        add: function(){
+        add1: function(){
             vm.showList = false;
-            vm.title = "新增";
+            vm.zipDeploy = false;
+            vm.title = "部署流程模板";
             vm.deploy = {};
 
+        },
+        add2: function(){
+            vm.showList = false;
+            vm.zipDeploy = true;
+            vm.title = "部署流程模板";
+            vm.deploy = {};
+
+        },
+       saveOrUpdate: function () {
+            if(vm.validator()){
+                return ;
+            }
+            var url =  "workFlow/deployByFile" ;
+            $.ajax({
+                type: "POST",
+                url: baseURL + url,
+                contentType: "application/json",
+
+                data: JSON.stringify(vm.deploy),
+                success: function(r){
+                    if(r.code === 0){
+                        alert('操作成功', function(){
+                            vm.reload();
+                        });
+                    }else{
+                        alert(r.msg);
+                    }
+                }
+            });
         },
         del: function () {
             var pactIds = getSelectedRows();
@@ -84,67 +116,29 @@ var vm = new Vue({
                 });
             });
         },
-        saveOrUpdate: function () {
-            if(vm.validator()){
-                return ;
-            }
-
-            var url =  "workFlow/upload";
-            $.ajax({
-                type: "POST",
-                url: baseURL + url,
-                contentType: "application/json",
-                data: JSON.stringify(vm.pact),
-                success: function(r){
-                    if(r.code === 0){
-                        alert('操作成功', function(){
-                            vm.reload();
-                        });
-                    }else{
-                        alert(r.msg);
-                    }
-                }
-            });
-        },
-        selectpickerfunc:function(){
-            $("#platformSelect").selectpicker({
-                noneSelectedText : '请选择'
-            });
-
-            $.get(baseURL + "common/platformList", function(r){
-                vm.platformEnum = r.platformEnum;
-                for (var i = 0; i < r.platformEnum.length; i++) {
-                    $("#platformSelect").append("<option value="+r.platformEnum[i]+">"+ r.platformEnum[i] + "</option>");
-                }
-            });
-            //$("#platformSelect").selectpicker();
-            $("#platformSelect").selectpicker('refresh');
-            $("#platformSelect").selectpicker('render');
-        },
         reload: function () {
             vm.showList = true;
             var page = $("#jqGrid").jqGrid('getGridParam','page');
-            var platformEnum = $("#jqGrid").jqGrid('getGridParam','platformEnum');
             $("#jqGrid").jqGrid('setGridParam',{
                 postData:{'platform': vm.q.platform,'name':vm.q.name},
                 page:page
             }).trigger("reloadGrid");
         },
         validator: function () {
-            if(isBlank(vm.pact.platform)){
-                alert("平台标识不能为空");
+            if(isBlank(vm.deploy.fileName)){
+                alert("模板文件名不能为空！");
                 return true;
             }
-            if(isBlank(vm.pact.params)){
-                alert("占位参数不能为空");
-                return true;
-            }
-            if(vm.pact.pactName == null && isBlank(vm.pact.pactName)){
-                alert("文档名称不能为空");
+            if(isBlank(vm.deploy.processName)){
+                alert("流程中文名称不能为空！");
                 return true;
             }
         },
         onUpload:function(e){
+            if(isBlank(vm.deploy.processName)){
+                alert("模板不能为空!");
+                return false;
+            }
             var fileName = e.target.files[0].name;
             var sufName = fileName.substring(fileName.lastIndexOf("."));
             if (!(sufName && /^.zip$/.test(sufName.toLowerCase()))){
@@ -154,6 +148,7 @@ var vm = new Vue({
             eTarget = e.target;
             var formData = new FormData();
             formData.append('file', e.target.files[0]);
+            formData.append('processName', vm.deploy.processName);
             $.ajax({
                 url: baseURL + 'workFlow/upload?token=' + token,
                 type: 'POST',
@@ -176,51 +171,7 @@ var vm = new Vue({
                     alert("网络错误");
                 }
             });
-        },
-        addContact:function(){
-
-            //新增弹窗
-            layer.open({
-                type : 1,
-                offset : '150px',
-                skin : 'layui-layer-molv',
-                title : "选择模板",
-                area : [ '750px', '520px' ],
-                shade : 0,
-                shadeClose : false,
-                content : jQuery("#addContacts"),
-                btn : [ '确定', '取消' ],
-                btn1 : function(index) {
-
-                    var ids=$('#jqPactGrid').jqGrid('getGridParam','selrow');
-                    if(ids == null ){
-                        alert("请至少选中一条数据！");
-                        return;
-                    };
-                    var rows = $('#jqPactGrid').jqGrid('getGridParam','selarrrow');
-                    if(rows.length >1){
-                        alert("请选中一条数据！");
-                        return;
-                    }
-                    var rowData = $('#jqPactGrid').jqGrid('getRowData',ids);
-                    console.log(rowData);
-                    vm.$set(vm.pact,"platform",rowData.platform);
-                    vm.$set(vm.pact,"pactName",rowData.name);
-                    //实际保存ID
-                    vm.$set(vm.pact,"pactTemplateId",ids);
-
-
-                    layer.close(index);
-                }.bind(this)
-            });
-            pactTemplate();
-        },
-        pactTemplateSearch :function () {
-            var page = $("#jqPactGrid").jqGrid('getGridParam','page');
-            $("#jqPactGrid").jqGrid('setGridParam',{
-                postData:{'platform': vm.qa.platform,'name': vm.qa.name},
-                page:page
-            }).trigger("reloadGrid");
         }
+
     }
 });

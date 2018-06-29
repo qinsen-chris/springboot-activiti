@@ -47,9 +47,14 @@ public class WorkflowServiceImpl implements IWorkflowService {
 	@Autowired
 	private HistoryService historyService;
 
+	@Override
+	public void deployByResourceFile(String resourceFilename, String processName) {
+		repositoryService.createDeployment().addClasspathResource("processes/"+resourceFilename).name(processName).deploy();
+	}
+
 	/**部署流程定义*/
 	@Override
-	public void saveNewDeploye(InputStream inputStream, String filename) {
+	public void deployeByZip(InputStream inputStream, String filename) {
 		try {
 			//2：将File类型的文件转化成ZipInputStream流
 			ZipInputStream zipInputStream = new ZipInputStream(inputStream);

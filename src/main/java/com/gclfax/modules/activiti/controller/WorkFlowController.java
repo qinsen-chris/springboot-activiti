@@ -13,6 +13,7 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -88,13 +89,32 @@ public class WorkFlowController extends AbstractController {
      * 上传文件
      */
     @RequestMapping("/upload")
-    public R upload(@RequestParam("file") MultipartFile file) throws Exception {
+    public R upload(@RequestParam("file") MultipartFile file,@RequestParam("processName") String processName) throws Exception {
         if (file.isEmpty()) {
             throw new RRException("上传文件不能为空！");
         }
-        // 获取文件名
-        String fileName = file.getOriginalFilename();
-        workflowService.saveNewDeploye(file.getInputStream(),fileName);
+        if(StringUtils.isEmpty(processName)){
+            throw new RRException("流程模板名称不能为空！");
+        }
+        workflowService.deployeByZip(file.getInputStream(),processName);
+        return R.ok();
+    }
+
+    /**
+     * 上传文件
+     */
+    @RequestMapping("/deployByFile")
+    public R deployByFile(@RequestBody Map<String, Object> params)  {
+        String fileName = (String) params.get("fileName");
+        String processName = (String) params.get("processName");
+        if (StringUtils.isEmpty(fileName)) {
+            throw new RRException("源文件名称不能为空！");
+        }
+        if (StringUtils.isEmpty(processName)) {
+            throw new RRException("流程模板名称不能为空！");
+        }
+
+        workflowService.deployByResourceFile(fileName,processName);
         return R.ok();
     }
 

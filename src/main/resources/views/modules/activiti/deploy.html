@@ -23,12 +23,62 @@
 <body>
 <div id="rrapp" v-cloak>
 	<div v-show="showList">
-			<a v-if="hasPermission('pactDict:save')" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;上传流程文件</a>
+		<div class="grid-btn">
+			<a v-if="hasPermission('pactDict:save')" class="btn btn-primary" @click="add1"><i class="fa fa-plus"></i>&nbsp;按文件名部署流程</a>
+			<a v-if="hasPermission('pactDict:save')" class="btn btn-primary" @click="add2"><i class="fa fa-plus"></i>&nbsp;上传流程文件</a>
 		</div>
-	    <table id="jqGrid"></table>
-	    <div id="jqGridPager"></div>
-    </div>
+		<table id="jqGrid"></table>
+		<div id="jqGridPager"></div>
+	</div>
 
+	<div v-show="!showList && !zipDeploy" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+			<div class="form-group">
+				<div class="col-sm-2 control-label">模板文件名称</div>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" v-model="deploy.fileName" placeholder="xxxx.bpmn"/>
+
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-2 control-label">流程名称</div>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" v-model="deploy.processName" placeholder="中文名称"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-2 control-label"></div>
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+
+	<div v-show="!showList && zipDeploy" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+			<div class="form-group">
+				<div class="col-sm-2 control-label">流程名称</div>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" v-model="deploy.processName" placeholder="中文名称"/>
+
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-2 control-label">上传模板zip文件</div>
+				<div class="col-sm-10">
+					<input type="file" class="form-control" name="deploy.fileName" @change='onUpload($event)'  placeholder="xxxx.zip"/>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<div class="col-sm-2 control-label"></div>
+				<input type="button" class="btn btn-primary" @click="reload" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
 </div>
 
 <script src="../../js/modules/activiti/deploy.js"></script>

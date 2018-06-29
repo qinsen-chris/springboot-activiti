@@ -15,7 +15,14 @@ import java.util.Map;
 
 public interface IWorkflowService {
 
-	void saveNewDeploye(InputStream inputStream, String filename);
+	/**
+	 * 按文件部署流程
+	 * @param resourceFilename
+	 * @param processName
+	 */
+	void deployByResourceFile(String resourceFilename,String processName);
+
+	void deployeByZip(InputStream inputStream, String filename);
 
 	List<Deployment> findDeploymentList();
 

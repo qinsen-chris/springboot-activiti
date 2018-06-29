@@ -23,6 +23,25 @@ public class WorkFlowTest {
     private IWorkflowService workflowService;
     @Autowired
     private ILeaveBillService leaveBillService;
+
+    @Test
+    public void deployByResourceFile(){
+        workflowService.deployByResourceFile("PactAuditDemo.bpmn","合同审批流程");
+    }
+    /**
+     * 发布流程
+     * @return
+     */
+    @Test
+    public void newdeploy() throws Exception {
+        //获取页面传递的值
+        //1：获取页面上传递的zip格式的文件，格式是File类型
+        File file = new File("D:/leaveBill.zip");
+        //文件名称
+        String filename = "请假单";
+        //完成部署
+        workflowService.deployeByZip(new FileInputStream(file),filename);
+    }
     /**
      * 部署管理首页显示
      * @return
@@ -39,21 +58,6 @@ public class WorkFlowTest {
         for (ProcessDefinition p : pdList) {
             System.out.println(p.getId()+"  ==  "+p.getName());
         }
-    }
-
-    /**
-     * 发布流程
-     * @return
-     */
-    @Test
-    public void newdeploy() throws Exception {
-        //获取页面传递的值
-        //1：获取页面上传递的zip格式的文件，格式是File类型
-        File file = new File("D:/leaveBill.zip");
-        //文件名称
-        String filename = "请假单";
-        //完成部署
-        workflowService.saveNewDeploye(new FileInputStream(file),filename);
     }
 
     /**
