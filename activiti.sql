@@ -96,10 +96,10 @@ INSERT INTO `activiti_demo`.`sys_menu` VALUES ('25', '4', '修改', null, 'sys:m
 INSERT INTO `activiti_demo`.`sys_menu` VALUES ('26', '4', '删除', null, 'sys:menu:delete', '2', null, '0');
 
 INSERT INTO `sys_menu` VALUES (27, 0, '工作流', NULL, NULL, 0, NULL, 2);
-INSERT INTO `sys_menu` VALUES (28, 27, '查看流程', 'modules/activiti/activitiTest.html', 'pactDict:list', 1, 'fa fa-file-text-o', 0);
-INSERT INTO `sys_menu` VALUES (29, 27, '任务列表', 'modules/activiti/taskList.html', 'pactDict:save,pactDict:list', 1, 'fa fa-file-text-o', 0);
-INSERT INTO `sys_menu` VALUES (30, 27, '部署流程对象', 'modules/activiti/deploy.html', NULL, 1, 'fa fa-file-text-o', 0);
-INSERT INTO `sys_menu` VALUES (31, 27, '流程列表', 'modules/activiti/procDef.html', NULL, 1, NULL, 0);
+INSERT INTO `sys_menu` VALUES (28, 27, '部署流程模板', 'modules/activiti/deploy.html', NULL, 1, 'fa fa-file-text-o', 1);
+INSERT INTO `sys_menu` VALUES (29, 27, '流程列表', 'modules/activiti/procDef.html', NULL, 1, NULL, 2);
+INSERT INTO `sys_menu` VALUES (30, 27, '查看流程', 'modules/activiti/activitiTest.html', 'pactDict:list', 1, 'fa fa-file-text-o', 3);
+INSERT INTO `sys_menu` VALUES (31, 27, '任务列表', 'modules/activiti/taskList.html', 'pactDict:save,pactDict:list', 1, 'fa fa-file-text-o', 4);
 
 -- ----------------------------
 -- Table structure for `sys_oss`
