@@ -125,12 +125,16 @@ var vm = new Vue({
                 alert("请指定办理人");
                 return ;
             }
+			var json = new Object();
+			json.id = id;
+			json.userId = vm.q.userId;
+			console.log(JSON.stringify(json));
 			confirm('确定要办理选中的任务？', function(){
 				$.ajax({
 					type: "POST",
-				    url: baseURL + "workFlow/startProcess",
+				    url: baseURL + "bill/startProcess",
                     contentType: "application/json",
-				    data: {"id":id,"userId":vm.q.userId},
+				    data: JSON.stringify(json),
 				    success: function(r){
 						if(r.code == 0){
 							alert('操作成功', function(){
@@ -196,7 +200,7 @@ var vm = new Vue({
             }).trigger("reloadGrid");
 		},
         validator: function () {
-            if(isBlank(vm.bill.days)){
+            if(isBlank(vm.bill.productName)){
                 alert("姓名不能为空");
                 return true;
             }
