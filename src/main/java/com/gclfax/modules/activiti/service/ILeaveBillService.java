@@ -19,4 +19,6 @@ public interface ILeaveBillService {
     List<LeaveBill> queryList(Query query);
 
 	int queryTotal(Query query);
+
+	LeaveBill findLeaveBillByTaskId(String taskId);
 }

@@ -46,8 +46,6 @@ public interface IWorkflowService {
 
 	String findTaskFormKeyByTaskId(String taskId);
 
-	LeaveBill findLeaveBillByTaskId(String taskId);
-
 	List<String> findOutComeListByTaskId(String taskId);
 
 	void saveSubmitTask(WorkflowBean workflowBean);

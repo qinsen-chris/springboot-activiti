@@ -153,33 +153,6 @@ public class WorkflowServiceImpl implements IWorkflowService {
 		return url;
 	}
 	
-	/**一：使用任务ID，查找请假单ID，从而获取请假单信息*/
-	@Override
-	public LeaveBill findLeaveBillByTaskId(String taskId) {
-		//1：使用任务ID，查询任务对象Task
-		Task task = taskService.createTaskQuery()//
-						.taskId(taskId)//使用任务ID查询
-						.singleResult();
-		//2：使用任务对象Task获取流程实例ID
-		String processInstanceId = task.getProcessInstanceId();
-		//3：使用流程实例ID，查询正在执行的执行对象表，返回流程实例对象
-		ProcessInstance pi = runtimeService.createProcessInstanceQuery()//
-						.processInstanceId(processInstanceId)//使用流程实例ID查询
-						.singleResult();
-		//4：使用流程实例对象获取BUSINESS_KEY
-		String buniness_key = pi.getBusinessKey();
-		//5：获取BUSINESS_KEY对应的主键ID，使用主键ID，查询请假单对象（LeaveBill.1）
-		String id = "";
-		if(StringUtils.isNotBlank(buniness_key)){
-			//截取字符串，取buniness_key小数点的第2个值
-			id = buniness_key.split("\\.")[1];
-		}
-		//查询请假单对象
-		//使用hql语句：from LeaveBill o where o.id=1
-		LeaveBill leaveBill = leaveBillDao.queryObject(Long.parseLong(id));
-		return leaveBill;
-	}
-	
 	/**二：已知任务ID，查询ProcessDefinitionEntiy对象，从而获取当前任务完成之后的连线名称，并放置到List<String>集合中*/
 	@Override
 	public List<String> findOutComeListByTaskId(String taskId) {

@@ -158,7 +158,7 @@ public class WorkFlowController extends AbstractController {
     public R viewTaskForm(@RequestParam("taskId")String taskId){
         //获取任务ID
         /**一：使用任务ID，查找请假单ID，从而获取请假单信息*/
-        LeaveBill leaveBill = workflowService.findLeaveBillByTaskId(taskId);
+        LeaveBill leaveBill = leaveBillService.findLeaveBillByTaskId(taskId);
         /**二：已知任务ID，查询ProcessDefinitionEntiy对象，从而获取当前任务完成之后的连线名称，并放置到List<String>集合中*/
         List<String> outcomeList = workflowService.findOutComeListByTaskId(taskId);
         /**三：查询所有历史审核人的审核信息，帮助当前人完成审核，返回List<Comment>*/
