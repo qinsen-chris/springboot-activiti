@@ -51,7 +51,6 @@ public class BillServiceImpl implements IBillService {
 		// 格式：Bill.id的形式（使用流程变量）
 		String objId = key + "." + id;
 		variables.put("objId", objId);
-		key = "Transaction";
 		// 6：使用流程定义的key，启动流程实例，同时设置流程变量，同时向正在执行的执行对象表中的字段BUSINESS_KEY添加业务数据，同时让流程关联业务
 		runtimeService.startProcessInstanceByKey(key, objId, variables);
 	}
