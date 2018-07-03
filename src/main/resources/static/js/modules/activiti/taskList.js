@@ -46,7 +46,7 @@ var vm = new Vue({
         title:null,
         commentList:{},
         outcomeList:null,
-        leaveBill:{
+        processInfo:{
             days:null,
             content:null,
             leaveDate:null,
@@ -84,10 +84,10 @@ var vm = new Vue({
                     if(r.code == 0){
                         vm.commentList = r.commentList;
                         vm.outcomeList = r.outcomeList;
-                        vm.leaveBill   = r.leaveBill;
+                        vm.processInfo   = r.processInfo;
                         vm.showList = false;
                         vm.title = "办理";
-                        vm.params.id = r.leaveBill.id;
+                        vm.params.id = r.processInfo.id;
                         vm.params.taskId = id;
                     }else{
                         alert(r.msg);

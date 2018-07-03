@@ -1,12 +1,10 @@
 package com.gclfax.modules.activiti.service.impl;
 
 import com.gclfax.common.utils.Query;
-import com.gclfax.common.utils.UserContextUtils;
 import com.gclfax.modules.activiti.dao.BillDao;
 import com.gclfax.modules.activiti.domain.Bill;
-import com.gclfax.modules.activiti.domain.LeaveBill;
+import com.gclfax.modules.activiti.service.IBaseProcessService;
 import com.gclfax.modules.activiti.service.IBillService;
-import com.gclfax.modules.sys.entity.SysUserEntity;
 
 import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
@@ -21,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class BillServiceImpl implements IBillService {
+public class BillServiceImpl implements IBillService,IBaseProcessService<Bill> {
 
 	@Autowired
 	private BillDao billDao;
@@ -43,7 +41,8 @@ public class BillServiceImpl implements IBillService {
 		leaveBill.setState(1);
 		billDao.update(leaveBill);
 		
-		String key = leaveBill.getClass().getSimpleName();
+		String processKey = leaveBill.getClass().getSimpleName();
+		String key = Bill.class.getName();  //获取业务类的完整路径
 		Map<String, Object> variables = new HashMap<String, Object>();
 
 		variables.put("userid", userid);// 表示惟一用户
@@ -52,7 +51,7 @@ public class BillServiceImpl implements IBillService {
 		String objId = key + "." + id;
 		variables.put("objId", objId);
 		// 6：使用流程定义的key，启动流程实例，同时设置流程变量，同时向正在执行的执行对象表中的字段BUSINESS_KEY添加业务数据，同时让流程关联业务
-		runtimeService.startProcessInstanceByKey(key, objId, variables);
+		runtimeService.startProcessInstanceByKey(processKey, objId, variables);
 	}
 	
 
@@ -105,5 +104,11 @@ public class BillServiceImpl implements IBillService {
 	@Override
 	public int queryTotal(Query query) {
 		return billDao.queryTotal(query);
+	}
+
+	@Override
+	public Bill queryObjectByBusinessKey(Class T, Object id) {
+		Bill bill = billDao.queryObject(id);
+		return bill;
 	}
 }

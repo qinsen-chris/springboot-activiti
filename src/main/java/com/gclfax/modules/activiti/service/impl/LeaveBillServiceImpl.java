@@ -3,6 +3,7 @@ package com.gclfax.modules.activiti.service.impl;
 import com.gclfax.common.utils.Query;
 import com.gclfax.modules.activiti.dao.LeaveBillDao;
 import com.gclfax.modules.activiti.domain.LeaveBill;
+import com.gclfax.modules.activiti.service.IBaseProcessService;
 import com.gclfax.modules.activiti.service.ILeaveBillService;
 import org.activiti.engine.*;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class LeaveBillServiceImpl implements ILeaveBillService {
+public class LeaveBillServiceImpl implements ILeaveBillService,IBaseProcessService<LeaveBill> {
 
 	@Autowired
 	private LeaveBillDao leaveBillDao;
@@ -101,5 +102,10 @@ public class LeaveBillServiceImpl implements ILeaveBillService {
 		//使用hql语句：from LeaveBill o where o.id=1
 		LeaveBill leaveBill = leaveBillDao.queryObject(Long.parseLong(id));
 		return leaveBill;
+	}
+
+	@Override
+	public LeaveBill queryObjectByBusinessKey(Class LeaveBill, Object id) {
+		return leaveBillDao.queryObject(id);
 	}
 }

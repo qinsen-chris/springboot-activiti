@@ -46,6 +46,13 @@ public interface IWorkflowService {
 
 	String findTaskFormKeyByTaskId(String taskId);
 
+	/**
+	 * 根据taskId获取流程中的BusinessKey
+	 * @param taskId
+	 * @return  String[0]对应的业务类  String[1]业务主键
+	 */
+	String[] findBusinessKeyByTaskId(String taskId);
+
 	List<String> findOutComeListByTaskId(String taskId);
 
 	void saveSubmitTask(WorkflowBean workflowBean);

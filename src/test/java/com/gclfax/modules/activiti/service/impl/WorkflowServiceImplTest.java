@@ -1,6 +1,8 @@
 package com.gclfax.modules.activiti.service.impl;
 
+import com.gclfax.modules.activiti.domain.Bill;
 import com.gclfax.modules.activiti.service.IWorkflowService;
+import com.gclfax.modules.activiti.vo.WorkflowBean;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,13 +53,18 @@ public class WorkflowServiceImplTest {
     @Test
     public void startProcessInstanceByMessage() throws Exception {
         String messageName = "dongbeiya";
-        String businessKey = "88";
+        String businessKey = "Bill.88";
         Map<String,Object> variables = new HashMap<String,Object>();
         workflowService.startProcessInstanceByMessage(messageName,businessKey,variables);
     }
 
     @Test
     public void findTaskListByName() throws Exception {
+        String className = Bill.class.getName();
+        System.out.println(className);
+        System.out.println(className.substring(0,className.lastIndexOf(".")));
+        System.out.println(className.substring(className.lastIndexOf(".")+1));
+
     }
 
     @Test
@@ -74,6 +81,10 @@ public class WorkflowServiceImplTest {
 
     @Test
     public void saveSubmitTask() throws Exception {
+        WorkflowBean workflowBean = new WorkflowBean();
+        workflowBean.setTaskId("7504");
+        workflowBean.setComment("ttt");
+        workflowService.saveSubmitTask(workflowBean);
     }
 
     @Test

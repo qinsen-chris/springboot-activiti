@@ -4,7 +4,10 @@ import com.gclfax.common.exception.RRException;
 import com.gclfax.common.utils.PageUtils;
 import com.gclfax.common.utils.Query;
 import com.gclfax.common.utils.R;
+import com.gclfax.modules.activiti.domain.BaseProcess;
+import com.gclfax.modules.activiti.domain.Bill;
 import com.gclfax.modules.activiti.domain.LeaveBill;
+import com.gclfax.modules.activiti.service.IBaseProcessService;
 import com.gclfax.modules.activiti.service.ILeaveBillService;
 import com.gclfax.modules.activiti.service.IWorkflowService;
 import com.gclfax.modules.activiti.vo.WorkflowBean;
@@ -13,6 +16,7 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +37,7 @@ public class WorkFlowController extends AbstractController {
     @Autowired
     private IWorkflowService workflowService;
     @Autowired
-    private ILeaveBillService leaveBillService;
+    private IBaseProcessService<Bill> baseProcessService;
 
     /**
      * 部署管理
@@ -152,13 +156,22 @@ public class WorkFlowController extends AbstractController {
     }
 
     /**
-     * 打开任务表单
+     *
      */
     @RequestMapping("/viewTask")
-    public R viewTaskForm(@RequestParam("taskId")String taskId){
+    public R viewTaskForm(@RequestParam("taskId")String taskId) throws ClassNotFoundException {
+        R r = R.ok();
         //获取任务ID
         /**一：使用任务ID，查找请假单ID，从而获取请假单信息*/
-        LeaveBill leaveBill = leaveBillService.findLeaveBillByTaskId(taskId);
+        //LeaveBill leaveBill = leaveBillService.findLeaveBillByTaskId(taskId);
+        String[] businessKey = workflowService.findBusinessKeyByTaskId(taskId);
+        if(businessKey != null){
+            String processType = businessKey[0];
+            Class c = Class.forName(processType);
+            BaseProcess processInfo  = baseProcessService.queryObjectByBusinessKey(c,businessKey[1]);
+            r.put("processInfo",processInfo);
+        }
+
         /**二：已知任务ID，查询ProcessDefinitionEntiy对象，从而获取当前任务完成之后的连线名称，并放置到List<String>集合中*/
         List<String> outcomeList = workflowService.findOutComeListByTaskId(taskId);
         /**三：查询所有历史审核人的审核信息，帮助当前人完成审核，返回List<Comment>*/
@@ -171,8 +184,7 @@ public class WorkFlowController extends AbstractController {
             map.put("fullMessage", c.getFullMessage());
             commentList.add(map);
         }
-        R r = R.ok().put("commentList", commentList);
-        r.put("leaveBill",leaveBill);
+        r.put("commentList", commentList);
         r.put("outcomeList",outcomeList);
         return r;
     }

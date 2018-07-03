@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
-  <process id="Bill" name="BillProcess" isExecutable="true">
+  <process id="Transaction" name="Transaction" isExecutable="true">
     <startEvent id="startevent1" name="Start"></startEvent>
     <userTask id="usertask1" name="下单" activiti:assignee="${userid}"></userTask>
     <endEvent id="endevent1" name="End"></endEvent>
@@ -29,7 +29,7 @@
     <userTask id="usertask3" name="发货" activiti:assignee="${userid}"></userTask>
     <boundaryEvent id="boundarytimer2" name="Timer" attachedToRef="usertask1" cancelActivity="true">
       <timerEventDefinition>
-        <timeDuration>PT1M</timeDuration>
+        <timeDuration>PT10M</timeDuration>
       </timerEventDefinition>
     </boundaryEvent>
     <boundaryEvent id="boundaryerror1" name="Error" attachedToRef="subprocess1">
@@ -148,7 +148,7 @@
         <omgdi:waypoint x="1307.0" y="590.0"></omgdi:waypoint>
         <omgdi:waypoint x="1307.0" y="325.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="48.0" x="356.0" y="569.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="100.0" x="356.0" y="569.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">

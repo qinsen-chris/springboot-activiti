@@ -5,8 +5,7 @@ import java.util.Date;
 /**
  * 商品订单
  */
-public class Bill {
-	private Long id;//主键ID
+public class Bill extends BaseProcess {
 	private String productName;// 商品名称
 	private Integer num;// 商品数量
 	private Double amount;//金额
@@ -16,13 +15,7 @@ public class Bill {
 	
 	private Integer state=0;// 定单状态 0初始录入,1.下单,2.付款，3.付款成功，4.发货，5、收货，6、完成
 
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	public String getProductName() {
 		return productName;

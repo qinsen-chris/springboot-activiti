@@ -5,8 +5,7 @@ import java.util.Date;
 /**
  * 请假单
  */
-public class LeaveBill {
-	private Long id;//主键ID
+public class LeaveBill extends BaseProcess {
 	private Integer days;// 请假天数
 	private String content;// 请假内容
 	private Date leaveDate = new Date();// 请假时间
@@ -14,14 +13,6 @@ public class LeaveBill {
 	private Long userId;// 请假人
 	
 	private Integer state=0;// 请假单状态 0初始录入,1.开始审批,2为审批完成
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	public Integer getDays() {
 		return days;

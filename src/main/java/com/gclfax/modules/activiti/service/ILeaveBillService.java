@@ -6,7 +6,7 @@ import com.gclfax.modules.activiti.domain.LeaveBill;
 import java.util.List;
 
 
-public interface ILeaveBillService {
+public interface ILeaveBillService{
 
 	List<LeaveBill> findLeaveBillList();
 
@@ -21,4 +21,5 @@ public interface ILeaveBillService {
 	int queryTotal(Query query);
 
 	LeaveBill findLeaveBillByTaskId(String taskId);
+
 }

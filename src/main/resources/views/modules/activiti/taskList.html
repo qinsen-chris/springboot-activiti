@@ -38,26 +38,38 @@
 		<div class="panel-heading">{{title}}</div>
 			<form class="form-horizontal">
 				<div class="form-group">
-					<div class="col-sm-2 control-label">开始时间</div>
+					<div class="col-sm-2 control-label">商品名称</div>
 					<div class="col-sm-10">
-						<input type="text" class="form-control" v-model="leaveBill.leaveDate" placeholder="开始时间"/>
+						<input type="text" class="form-control" v-model="processInfo.productName" placeholder="商品名称"/>
 					</div>
 				</div><div class="form-group">
-					<div class="col-sm-2 control-label">请假天数</div>
+					<div class="col-sm-2 control-label">商品数量</div>
 					<div class="col-sm-10">
-						<input type="text" class="form-control" v-model="leaveBill.days" placeholder="天数"/>
+						<input type="text" class="form-control" v-model="processInfo.num" placeholder="商品数量"/>
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-2 control-label">请假内容</div>
+					<div class="col-sm-2 control-label">金额</div>
 					<div class="col-sm-10">
-						<input type="text" class="form-control" v-model="leaveBill.content" placeholder="请假内容"/>
+						<input type="text" class="form-control" v-model="processInfo.amount" placeholder="金额"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2 control-label">创建时间</div>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" v-model="processInfo.createDate" placeholder="创建时间"/>
 					</div>
 				</div>
 				<div class="form-group">
 					<div class="col-sm-2 control-label">备注</div>
 					<div class="col-sm-10">
-						<input type="text" class="form-control" v-model="leaveBill.remark" placeholder="备注"/>
+						<input type="text" class="form-control" v-model="processInfo.remark" placeholder="备注"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2 control-label">下单人</div>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" v-model="processInfo.userId" placeholder="下单人"/>
 					</div>
 				</div>
 
@@ -85,7 +97,7 @@
 
 				<div class="form-group">
 					<div class="col-sm-2 control-label"></div>
-					<div class="col-sm-8" v-for="(arr ,index) in outcomeList">
+					<div class="col-sm-4" v-for="(arr ,index) in outcomeList">
 						<input type="button" class="btn btn-primary" @click="saveOrUpdate(arr)" :value="arr"/>
 					</div>
 					<div class="col-sm-2">

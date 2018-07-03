@@ -152,7 +152,40 @@ public class WorkflowServiceImpl implements IWorkflowService {
 		String url = formData.getFormKey();
 		return url;
 	}
-	
+
+	/**
+	 * 根据taskId获取流程中的BusinessKey
+	 *
+	 * @param taskId
+	 * @return
+	 */
+	@Override
+	public String[] findBusinessKeyByTaskId(String taskId) {
+		//1：使用任务ID，查询任务对象Task
+		Task task = taskService.createTaskQuery()//
+				.taskId(taskId)//使用任务ID查询
+				.singleResult();
+		//2：使用任务对象Task获取流程实例ID
+		String processInstanceId = task.getProcessInstanceId();
+		//3：使用流程实例ID，查询正在执行的执行对象表，返回流程实例对象
+		ProcessInstance pi = runtimeService.createProcessInstanceQuery()//
+				.processInstanceId(processInstanceId)//使用流程实例ID查询
+				.singleResult();
+		//4：使用流程实例对象获取BUSINESS_KEY
+		String buniness_key = pi.getBusinessKey();
+		//5：获取BUSINESS_KEY对应的主键ID，使用主键ID，查询请假单对象（LeaveBill.1）
+
+		if(StringUtils.isNotBlank(buniness_key)){
+			//return buniness_key.split("\\.");
+
+			String[] s = new String[2];
+			s[0] = buniness_key.substring(0,buniness_key.lastIndexOf("."));
+			s[1] = buniness_key.substring(buniness_key.lastIndexOf(".")+1);
+			return  s;
+		}
+		return null;
+	}
+
 	/**二：已知任务ID，查询ProcessDefinitionEntiy对象，从而获取当前任务完成之后的连线名称，并放置到List<String>集合中*/
 	@Override
 	public List<String> findOutComeListByTaskId(String taskId) {
