@@ -1,5 +1,6 @@
 package com.gclfax.modules.activiti.service;
 
+import com.gclfax.common.utils.ErrorInfo;
 import com.gclfax.common.utils.Query;
 import com.gclfax.modules.activiti.domain.Bill;
 
@@ -12,7 +13,7 @@ public interface IBillService {
 
 	void saveBill(Bill bill);
 
-	Bill findBillById(Long id);
+	Bill findBillById(Long id,ErrorInfo errorInfo);
 
 	void deleteBillById(Long id);
 
@@ -21,4 +22,6 @@ public interface IBillService {
 	int queryTotal(Query query);
 
 	void saveStartProcess(Long id, String userId);
+
+	void saveStartProcessMessage(Long id, String userId);
 }

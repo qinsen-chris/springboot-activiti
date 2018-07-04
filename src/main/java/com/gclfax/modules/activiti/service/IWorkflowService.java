@@ -32,8 +32,6 @@ public interface IWorkflowService {
 
 	void deleteProcessDefinitionByDeploymentId(String deploymentId);
 
-	void saveStartProcess(Long id);
-
 	/**
 	 * 消息开始事件启动流程
 	 * @param messageName
@@ -58,8 +56,6 @@ public interface IWorkflowService {
 	void saveSubmitTask(WorkflowBean workflowBean);
 
 	List<Comment> findCommentByTaskId(String taskId);
-
-	List<Comment> findCommentByLeaveBillId(Long id);
 
 	ProcessDefinition findProcessDefinitionByTaskId(String taskId);
 

@@ -1,5 +1,6 @@
 package com.gclfax.modules.activiti.service.impl;
 
+import com.gclfax.common.utils.ErrorInfo;
 import com.gclfax.common.utils.Query;
 import com.gclfax.modules.activiti.dao.BillDao;
 import com.gclfax.modules.activiti.domain.Bill;
@@ -37,11 +38,11 @@ public class BillServiceImpl implements IBillService,IBaseProcessService<Bill> {
 	
 	@Override
 	public void saveStartProcess(Long id, String userid) {
-		Bill leaveBill = billDao.queryObject(id);
-		leaveBill.setState(1);
-		billDao.update(leaveBill);
+		Bill bill = billDao.queryObject(id);
+		bill.setState(1);
+		billDao.update(bill);
 		
-		String processKey = leaveBill.getClass().getSimpleName();
+		String processKey = bill.getClass().getSimpleName();
 		String key = Bill.class.getName();  //获取业务类的完整路径
 		Map<String, Object> variables = new HashMap<String, Object>();
 
@@ -53,9 +54,27 @@ public class BillServiceImpl implements IBillService,IBaseProcessService<Bill> {
 		// 6：使用流程定义的key，启动流程实例，同时设置流程变量，同时向正在执行的执行对象表中的字段BUSINESS_KEY添加业务数据，同时让流程关联业务
 		runtimeService.startProcessInstanceByKey(processKey, objId, variables);
 	}
-	
 
-	/**查询自己的请假单的信息*/
+	@Override
+	public void saveStartProcessMessage(Long id, String userid) {
+		Bill bill = billDao.queryObject(id);
+		bill.setState(1);
+		billDao.update(bill);
+
+		String messageName = "main-site";
+		String key = Bill.class.getName();  //获取业务类的完整路径
+		Map<String, Object> variables = new HashMap<String, Object>();
+
+		variables.put("userid", userid);// 表示惟一用户
+
+		// 格式：Bill.id的形式（使用流程变量）
+		String objId = key + "." + id;
+		variables.put("objId", objId);
+
+		// 6：使用消息名称启动流程
+		runtimeService.startProcessInstanceByMessage(messageName,objId, variables);
+	}
+	
 	@Override
 	public List<Bill> findBillList() {
 		Map<String,Object> map = new HashMap<>();
@@ -63,7 +82,6 @@ public class BillServiceImpl implements IBillService,IBaseProcessService<Bill> {
 		return list;
 	}
 	
-	/**保存请假单*/
 	@Override
 	public void saveBill(Bill bill) {
 		//获取请假单ID
@@ -83,14 +101,15 @@ public class BillServiceImpl implements IBillService,IBaseProcessService<Bill> {
 		
 	}
 	
-	/**使用请假单ID，查询请假单的对象*/
 	@Override
-	public Bill findBillById(Long id) {
+	public Bill findBillById(Long id,ErrorInfo errorInfo) {
 		Bill bill = billDao.queryObject(id);
+		if(bill==null){
+			errorInfo.code = -1;
+		}
 		return bill;
 	}
 	
-	/**使用请假单ID，删除请假单*/
 	@Override
 	public void deleteBillById(Long id) {
 		billDao.delete(id);

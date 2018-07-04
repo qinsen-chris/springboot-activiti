@@ -147,6 +147,37 @@ var vm = new Vue({
 				});
 			});
 		},
+       startProcMessage: function () {
+            var id = getSelectedRow();
+            if(id == null){
+                return ;
+            }
+            if(isBlank(vm.q.userId)){
+                alert("请指定办理人");
+                return ;
+            }
+            var json = new Object();
+            json.id = id;
+            json.userId = vm.q.userId;
+            console.log(JSON.stringify(json));
+            confirm('确定要办理选中的任务？', function(){
+                $.ajax({
+                    type: "POST",
+                    url: baseURL + "bill/startProcMessage",
+                    contentType: "application/json",
+                    data: JSON.stringify(json),
+                    success: function(r){
+                        if(r.code == 0){
+                            alert('操作成功', function(){
+                                vm.reload();
+                            });
+                        }else{
+                            alert(r.msg);
+                        }
+                    }
+                });
+            });
+        },
 		view: function () {
 			var id = getSelectedRow();
 			if(id == null){

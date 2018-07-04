@@ -14,6 +14,10 @@ public class WorkflowBean {
 	private String taskId;		//任务ID
 	private String outcome;		//连线名称
 	private String comment;		//备注
+
+	private String userid;  //任务接收人
+	private String result; //业务执行结果   success：成功 fail：失败
+
 	
 	public File getFile() {
 		return file;
@@ -63,6 +67,18 @@ public class WorkflowBean {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	
-	
+
+	public String getUserid() {
+		return userid;
+	}
+	public void setUserid(String userid) {
+		this.userid = userid;
+	}
+
+	public String getResult() {
+		return result;
+	}
+	public void setResult(String result) {
+		this.result = result;
+	}
 }

@@ -3,6 +3,12 @@ package com.gclfax.modules.activiti.service.impl;
 import com.gclfax.modules.activiti.domain.Bill;
 import com.gclfax.modules.activiti.service.IWorkflowService;
 import com.gclfax.modules.activiti.vo.WorkflowBean;
+import org.activiti.engine.IdentityService;
+import org.activiti.engine.TaskService;
+import org.activiti.engine.identity.User;
+import org.activiti.engine.impl.persistence.entity.GroupEntity;
+import org.activiti.engine.impl.persistence.entity.UserEntity;
+import org.activiti.engine.task.Task;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -22,6 +29,12 @@ import static org.junit.Assert.*;
 public class WorkflowServiceImplTest {
     @Autowired
     private IWorkflowService workflowService;
+    @Autowired
+    private IdentityService identityService;
+    @Autowired
+    private TaskService taskService;
+
+
     @Test
     public void deployByResourceFile() throws Exception {
     }
@@ -44,26 +57,43 @@ public class WorkflowServiceImplTest {
 
     @Test
     public void deleteProcessDefinitionByDeploymentId() throws Exception {
+        List<User> userList = identityService.createUserQuery().memberOfGroup("1").list();
+        System.out.println(userList);
     }
 
     @Test
     public void saveStartProcess() throws Exception {
+        //在部署流程定义和启动流程实例的中间，设置组任务的办理人，向Activity表中存放组和用户的信息
+        GroupEntity group1 = new GroupEntity("1");
+        group1.setName("fh");
+        GroupEntity group2 = new GroupEntity("2");
+        group2.setName("sh");
+        identityService.saveGroup(group1);//建立组
+        identityService.saveGroup(group2);//建立组
+        UserEntity user1 = new UserEntity("u1");
+        user1.setFirstName("fh1");
+        UserEntity user2 = new UserEntity("u2");
+        user2.setFirstName("fh2");
+        identityService.saveUser(user1);
+        identityService.saveUser(user2);
+        identityService.createMembership("u1", "1");//建立组和用户关系
+        identityService.createMembership("u2", "1");//建立组和用户关系
     }
 
     @Test
     public void startProcessInstanceByMessage() throws Exception {
-        String messageName = "dongbeiya";
-        String businessKey = "Bill.88";
+        String messageName = "main-site";
+        String businessKey = "com.gclfax.modules.activiti.domain.Bill.88";
         Map<String,Object> variables = new HashMap<String,Object>();
+        variables.put("userid","wf");
+        variables.put("usertype","vip");
         workflowService.startProcessInstanceByMessage(messageName,businessKey,variables);
     }
 
     @Test
     public void findTaskListByName() throws Exception {
-        String className = Bill.class.getName();
-        System.out.println(className);
-        System.out.println(className.substring(0,className.lastIndexOf(".")));
-        System.out.println(className.substring(className.lastIndexOf(".")+1));
+        List<Task> list = taskService.createTaskQuery().taskCandidateOrAssigned("fh2").list();
+        System.out.println(list);
 
     }
 

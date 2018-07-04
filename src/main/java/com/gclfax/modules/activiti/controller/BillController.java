@@ -55,4 +55,13 @@ public class BillController extends AbstractController {
         return R.ok();
     }
 
+    @RequestMapping("/startProcMessage")
+    public R startProcMessage(@RequestBody Map<String, Object> params){
+        Long id = Long.valueOf((params.get("id")+""));
+        String userId = (String) params.get("userId");
+        //更新请假状态，启动流程实例，让启动的流程实例关联业务
+        billService.saveStartProcessMessage(id,userId);
+        return R.ok();
+    }
+
 }

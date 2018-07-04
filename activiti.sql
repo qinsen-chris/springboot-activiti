@@ -95,11 +95,12 @@ INSERT INTO `activiti_demo`.`sys_menu` VALUES ('24', '4', '新增', null, 'sys:m
 INSERT INTO `activiti_demo`.`sys_menu` VALUES ('25', '4', '修改', null, 'sys:menu:update,sys:menu:select', '2', null, '0');
 INSERT INTO `activiti_demo`.`sys_menu` VALUES ('26', '4', '删除', null, 'sys:menu:delete', '2', null, '0');
 
-INSERT INTO `sys_menu` VALUES (27, 0, '工作流', NULL, NULL, 0, NULL, 2);
+INSERT INTO `sys_menu` VALUES (27, 0, '工作流', NULL, NULL, 0, 'fa fa-cog', 2);
 INSERT INTO `sys_menu` VALUES (28, 27, '部署流程模板', 'modules/activiti/deploy.html', NULL, 1, 'fa fa-file-text-o', 1);
-INSERT INTO `sys_menu` VALUES (29, 27, '流程列表', 'modules/activiti/procDef.html', NULL, 1, NULL, 2);
-INSERT INTO `sys_menu` VALUES (30, 27, '查看流程', 'modules/activiti/activitiTest.html', 'pactDict:list', 1, 'fa fa-file-text-o', 3);
-INSERT INTO `sys_menu` VALUES (31, 27, '任务列表', 'modules/activiti/taskList.html', 'pactDict:save,pactDict:list', 1, 'fa fa-file-text-o', 4);
+INSERT INTO `sys_menu` VALUES (29, 27, '流程列表', 'modules/activiti/procDef.html', NULL, 1, 'fa fa-file-text-o', 2);
+--INSERT INTO `sys_menu` VALUES (30, 27, '查看流程', 'modules/activiti/activitiTest.html', 'pactDict:list', 1, 'fa fa-file-text-o', 3);
+INSERT INTO `sys_menu` VALUES (31, 27, '任务列表', 'modules/activiti/taskList.html', 'pactDict:save,pactDict:list', 1, NULL, 5);
+INSERT INTO `sys_menu` VALUES (32, 27, '发起订单', 'modules/activiti/bill.html', null, 1, NULL, 4);
 
 -- ----------------------------
 -- Table structure for `sys_oss`
@@ -209,5 +210,16 @@ CREATE TABLE `activiti_demo`.`sys_user_token` (
 -- ----------------------------
 INSERT INTO `activiti_demo`.`sys_user_token` VALUES ('1', '02e4099d985782fbd13595f20e15d563', '2018-05-08 01:48:07', '2018-05-07 13:48:07');
 
+CREATE TABLE `t_bill` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `productName` varchar(200) DEFAULT NULL,
+  `amount` double(40,0) DEFAULT NULL,
+  `num` int(11) DEFAULT NULL,
+  `remark` varchar(200) DEFAULT NULL,
+  `createDate` datetime DEFAULT NULL,
+  `userId` bigint(11) DEFAULT NULL,
+  `state` int(11) DEFAULT '0' COMMENT '定单状态 0初始录入,1.下单,2.付款，3.付款成功，4.发货，5、收货，6、完成',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf32;
 
 

@@ -1,6 +1,7 @@
 package com.gclfax.modules.activiti.controller;
 
 import com.gclfax.common.exception.RRException;
+import com.gclfax.common.utils.ErrorInfo;
 import com.gclfax.common.utils.PageUtils;
 import com.gclfax.common.utils.Query;
 import com.gclfax.common.utils.R;
@@ -8,6 +9,7 @@ import com.gclfax.modules.activiti.domain.BaseProcess;
 import com.gclfax.modules.activiti.domain.Bill;
 import com.gclfax.modules.activiti.domain.LeaveBill;
 import com.gclfax.modules.activiti.service.IBaseProcessService;
+import com.gclfax.modules.activiti.service.IBillService;
 import com.gclfax.modules.activiti.service.ILeaveBillService;
 import com.gclfax.modules.activiti.service.IWorkflowService;
 import com.gclfax.modules.activiti.vo.WorkflowBean;
@@ -38,6 +40,8 @@ public class WorkFlowController extends AbstractController {
     private IWorkflowService workflowService;
     @Autowired
     private IBaseProcessService<Bill> baseProcessService;
+    @Autowired
+    private IBillService billService;
 
     /**
      * 部署管理
@@ -122,14 +126,6 @@ public class WorkFlowController extends AbstractController {
         return R.ok();
     }
 
-    // 启动流程
-    @RequestMapping("/startProcess")
-    public R startProcess(@RequestParam("id")Long id){
-        //更新请假状态，启动流程实例，让启动的流程实例关联业务
-        workflowService.saveStartProcess(id);
-        return R.ok();
-    }
-
     /**
      * 任务管理显示
      * @return
@@ -199,6 +195,19 @@ public class WorkFlowController extends AbstractController {
         workflowBean.setComment((String) params.get("comment"));
         workflowBean.setTaskId((String) params.get("taskId"));
         workflowBean.setOutcome((String) params.get("outcome"));
+        workflowBean.setUserid((String) params.get("userid"));
+
+        ErrorInfo errorInfo=new ErrorInfo();
+
+        //做业务
+        Bill bill =  billService.findBillById(Long.parseLong(params.get("id")+""),errorInfo);
+        if(errorInfo.code<0){
+            workflowBean.setResult("fail");
+        }else{
+            workflowBean.setResult("success");
+        }
+
+        //提交流程
         workflowService.saveSubmitTask(workflowBean);
         return R.ok();
     }

@@ -56,7 +56,8 @@ var vm = new Vue({
             id:null,
             taskId:null,
             outcome:null,
-            comment:null
+            comment:null,
+            userid:null
         }
     },
     methods: {
@@ -120,6 +121,10 @@ var vm = new Vue({
             });
         },
         saveOrUpdate: function (arr) {
+            if(isBlank(vm.params.userid)){
+                alert("请指定办理人");
+                return ;
+            }
             vm.params.outcome = arr;
             var url =  "workFlow/submitTask";
             $.ajax({
