@@ -7,7 +7,9 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +62,9 @@ public interface IWorkflowService {
 	ProcessDefinition findProcessDefinitionByTaskId(String taskId);
 
 	Map<String, Object> findCoordingByTask(String taskId);
+
+	OutputStream viewTaskImage(String taskId, HttpServletResponse response);
+	OutputStream viewTaskImageCurr(String taskId, HttpServletResponse response);
 
 	
 

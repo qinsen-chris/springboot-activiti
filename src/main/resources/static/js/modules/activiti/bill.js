@@ -93,29 +93,6 @@ var vm = new Vue({
 			vm.showList = false;
             vm.title = "修改";
 		},
-		del: function () {
-			var ids = getSelectedRows();
-			if(ids == null){
-				return ;
-			}
-			confirm('确定要删除选中的记录？', function(){
-				$.ajax({
-					type: "POST",
-				    url: baseURL + "activiti/firstDemo",
-                    contentType: "application/json",
-				    data: JSON.stringify(ids),
-				    success: function(r){
-						if(r.code == 0){
-							alert('操作成功', function(){
-                                vm.reload();
-							});
-						}else{
-							alert(r.msg);
-						}
-					}
-				});
-			});
-		},
         startProc: function () {
 			var id = getSelectedRow();
 			if(id == null){
@@ -178,29 +155,6 @@ var vm = new Vue({
                 });
             });
         },
-		view: function () {
-			var id = getSelectedRow();
-			if(id == null){
-				return ;
-			}
-			var getRow = $('#jqGrid').getRowData(id);//获取当前的数据行
-			var executionId = getRow.executionId;
-			confirm('确定要办理选中的任务？', function(){
-				$.ajax({
-					type: "POST",
-				    url: baseURL + "activiti/viewTaskImage",
-                    contentType: "application/json",
-				    data: JSON.stringify(id),
-				    success: function(r){
-						if(r.code == 0){
-							
-						}else{
-							alert(r.msg);
-						}
-					}
-				});
-			});
-		},
 		saveOrUpdate: function () {
             if(vm.validator()){
                 return ;

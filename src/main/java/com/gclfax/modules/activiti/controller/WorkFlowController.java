@@ -18,6 +18,7 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
 
 /**
@@ -211,5 +218,22 @@ public class WorkFlowController extends AbstractController {
         workflowService.saveSubmitTask(workflowBean);
         return R.ok();
     }
+
+    @RequestMapping("/viewTaskImage")
+    public R viewTaskImage(@RequestParam("taskId")String taskId,HttpServletResponse response) throws ServletException, IOException {
+        response.setHeader("Cache-Control", "no-store, no-cache");
+        response.setContentType("image/png");
+        OutputStream out = workflowService.viewTaskImage(taskId,response);
+        return R.ok();
+    }
+
+    @RequestMapping("/viewTaskImageCurr")
+    public R viewTaskImageCurr(@RequestParam("taskId")String taskId,HttpServletResponse response) throws ServletException, IOException {
+        R r = R.ok();
+        Map<String, Object> map = workflowService.findCoordingByTask(taskId);
+        r.put("image",map);
+        return r;
+    }
+
 }
 

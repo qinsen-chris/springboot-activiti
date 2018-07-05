@@ -29,12 +29,14 @@
 			</div>
 			<a class="btn btn-default" @click="query">查询</a>
 			<a v-if="hasPermission('pactDict:save')" class="btn btn-primary" @click="complete"><i class="fa fa-trash-o"></i>&nbsp;申请办理</a>
+			<a v-if="" class="btn btn-primary" @click="viewPic"><i class="fa fa-trash-o"></i>&nbsp;查看流程图</a>
+			<a v-if="" class="btn btn-primary" @click="viewPicCurr"><i class="fa fa-trash-o"></i>&nbsp;查看当前节点流程图</a>
 		</div>
 		<table id="jqGrid"></table>
 	    <div id="jqGridPager"></div>
     </div>
 
-	<div v-show="!showList" class="panel panel-default">
+	<div v-show="!showList && !showPic" class="panel panel-default">
 		<div class="panel-heading">{{title}}</div>
 			<form class="form-horizontal">
 				<div class="form-group">
@@ -110,6 +112,17 @@
 
 				</div>
 			</form>
+		</div>
+
+		<div v-show="!showList && showPic" class="panel panel-default">
+			<img :src="src" />
+			<div v-show="image != null" >
+				<!--{{image}}-->
+				<div :style="'position: absolute;border:2px solid red;top:'+ image.y +'px;left:' + image.x +'px;width:'+ image.width +'px;height:'+ image.height + 'px; '  "></div>
+			</div>
+			<div class="col-sm-2">
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
 		</div>
 	</div>
 

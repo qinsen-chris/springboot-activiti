@@ -4,10 +4,12 @@ import com.gclfax.modules.activiti.domain.Bill;
 import com.gclfax.modules.activiti.service.IWorkflowService;
 import com.gclfax.modules.activiti.vo.WorkflowBean;
 import org.activiti.engine.IdentityService;
+import org.activiti.engine.RepositoryService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.persistence.entity.GroupEntity;
 import org.activiti.engine.impl.persistence.entity.UserEntity;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +35,8 @@ public class WorkflowServiceImplTest {
     private IdentityService identityService;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private RepositoryService repositoryService;
 
 
     @Test
@@ -99,6 +103,13 @@ public class WorkflowServiceImplTest {
 
     @Test
     public void findTaskFormKeyByTaskId() throws Exception {
+
+        Task task = taskService.createTaskQuery().taskId("75015").singleResult();
+        String processDefId= task.getProcessDefinitionId();
+        ProcessDefinition pd =  repositoryService.createProcessDefinitionQuery().processDefinitionId(processDefId).singleResult();
+        String deploymentId = pd.getDeploymentId();
+        //资源图片名称
+        String imageName = pd.getDiagramResourceName();
     }
 
     @Test

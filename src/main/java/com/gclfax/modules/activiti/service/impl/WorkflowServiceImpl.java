@@ -21,7 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +90,56 @@ public class WorkflowServiceImpl implements IWorkflowService {
 			String imageName) {
 		return repositoryService.getResourceAsStream(deploymentId, imageName);
 	}
-	
+
+	@Override
+	public OutputStream viewTaskImage(String taskId,HttpServletResponse response) {
+		Task task = taskService.createTaskQuery()//
+				.taskId(taskId)//使用任务ID查询
+				.singleResult();
+		String processDefId= task.getProcessDefinitionId();
+		ProcessDefinition pd =  repositoryService.createProcessDefinitionQuery().processDefinitionId(processDefId).singleResult();
+		String deploymentId = pd.getDeploymentId();
+		//资源图片名称
+		String imageName = pd.getDiagramResourceName();
+		//2：获取资源文件表（act_ge_bytearray）中资源图片输入流InputStream
+		InputStream in = repositoryService.getResourceAsStream(deploymentId, imageName);
+		//3：从response对象获取输出流
+		//response.setContentType("image/png");
+
+		try {
+			OutputStream out = response.getOutputStream();
+			//4：将输入流中的数据读取出来，写到输出流中
+			for(int b=-1;(b=in.read())!=-1;){
+				out.write(b);
+			}
+			out.close();
+			in.close();
+			return  out;
+		}catch (Exception e){
+			e.printStackTrace();
+		}finally {
+
+		}
+		return null;
+	}
+
+	@Override
+	public OutputStream viewTaskImageCurr(String taskId, HttpServletResponse response) {
+		Task task = taskService.createTaskQuery()//
+				.taskId(taskId)//使用任务ID查询
+				.singleResult();
+		String processDefId= task.getProcessDefinitionId();
+		ProcessDefinition pd =  repositoryService.createProcessDefinitionQuery().processDefinitionId(processDefId).singleResult();
+		String deploymentId = pd.getDeploymentId();
+		//资源图片名称
+		String imageName = pd.getDiagramResourceName();
+		//2：获取资源文件表（act_ge_bytearray）中资源图片输入流InputStream
+		InputStream in = repositoryService.getResourceAsStream(deploymentId, imageName);
+		findCoordingByTask(taskId);
+
+		return null;
+	}
+
 	/**使用部署对象ID，删除流程定义*/
 	@Override
 	public void deleteProcessDefinitionByDeploymentId(String deploymentId) {
@@ -295,7 +346,7 @@ public class WorkflowServiceImpl implements IWorkflowService {
 		String processDefinitionId = task.getProcessDefinitionId();
 		//获取流程定义的实体对象（对应.bpmn文件中的数据）
 		ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity)repositoryService.getProcessDefinition(processDefinitionId);
-		//流程实例ID
+/*		//流程实例ID
 		String processInstanceId = task.getProcessInstanceId();
 		//使用流程实例ID，查询正在执行的执行对象表，获取当前活动对应的流程实例对象
 		ProcessInstance pi = runtimeService.createProcessInstanceQuery()//创建流程实例查询
@@ -304,7 +355,14 @@ public class WorkflowServiceImpl implements IWorkflowService {
 		//获取当前活动的ID
 		String activityId = pi.getActivityId();
 		//获取当前活动对象
-		ActivityImpl activityImpl = processDefinitionEntity.findActivity(activityId);//活动ID
+		ActivityImpl activityImpl = processDefinitionEntity.findActivity(activityId);//活动ID*/
+
+		String executionId = task.getExecutionId();
+		Execution ee = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
+		String activityId =  ee.getActivityId() ;
+
+		//4：获取当前的活动
+		ActivityImpl activityImpl = processDefinitionEntity.findActivity(activityId);
 		//获取坐标
 		map.put("x", activityImpl.getX());
 		map.put("y", activityImpl.getY());

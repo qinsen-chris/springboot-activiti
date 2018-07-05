@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.gclfax.modules.activiti.service.IWorkflowService;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.persistence.entity.GroupEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.activiti.engine.identity.Group;
 import org.activiti.engine.impl.persistence.entity.UserEntity;
 
 import org.activiti.engine.repository.Deployment;
@@ -23,14 +23,14 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gclfax.common.utils.PageUtils;
 import com.gclfax.common.utils.R;
 import com.gclfax.modules.activiti.vo.UserTaskVo;
 import com.gclfax.modules.sys.controller.AbstractController;
+
+import javax.servlet.http.HttpServletResponse;
 
 
 @RestController
@@ -44,6 +44,9 @@ public class DemoController  extends AbstractController{
     private TaskService taskService;    
     @Autowired
     private IdentityService identityService;
+	@Autowired
+	private IWorkflowService workflowService;
+
 
 	@RequestMapping("/deployTest")
 	@RequiresPermissions("pactDict:save")
@@ -188,9 +191,11 @@ public class DemoController  extends AbstractController{
     	
     	return R.ok();
     }
-    
-    @RequestMapping("/viewTaskImage")  
-    public R viewTaskImage(@RequestBody String id){
+
+
+
+    @RequestMapping("/viewTaskImage1")
+    public R viewTaskImage1(@RequestBody String id){
 
 		/**一：查看流程图*/
 		//1：获取任务ID，获取任务对象，使用任务对象获取流程定义ID，查询流程定义对象

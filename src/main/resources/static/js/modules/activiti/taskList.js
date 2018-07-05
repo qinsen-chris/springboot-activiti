@@ -43,6 +43,7 @@ var vm = new Vue({
             username: null
         },
         showList: true,
+        showPic: false,
         title:null,
         commentList:{},
         outcomeList:null,
@@ -58,7 +59,9 @@ var vm = new Vue({
             outcome:null,
             comment:null,
             userid:null
-        }
+        },
+        src:'workFlow/viewTaskImage',
+        image:{}
     },
     methods: {
         query: function () {
@@ -87,6 +90,7 @@ var vm = new Vue({
                         vm.outcomeList = r.outcomeList;
                         vm.processInfo   = r.processInfo;
                         vm.showList = false;
+                        vm.showPic = false;
                         vm.title = "办理";
                         vm.params.id = r.processInfo.id;
                         vm.params.taskId = id;
@@ -152,6 +156,61 @@ var vm = new Vue({
                 postData:{'username': vm.q.username},
                 page:page
             }).trigger("reloadGrid");
+        },
+        viewPic: function () {
+            var id = getSelectedRow();
+            if(id == null){
+                return ;
+            }
+            var getRow = $('#jqGrid').getRowData(id);//获取当前的数据行
+            var executionId = getRow.executionId;
+
+                vm.showList = false;
+                vm.showPic = true;
+                vm.src = baseURL + "workFlow/viewTaskImage?taskId="+id;
+               /* $.ajax({
+                    type: "POST",
+                    url: baseURL + "workFlow/viewTaskImage?taskId="+id,
+                    contentType: "application/json",
+                    data: {},
+                    success: function(r){
+                        if(r.code == 0){
+                            vm.showList = false;
+                            vm.showPic = true;
+                          *//*  vm.src =  "http://localhost:9001"+baseURL + "workFlow/viewTaskImage?taskId="+id;*//*
+                        }else{
+                            alert(r.msg);
+                        }
+                    }
+                });*/
+
+        },
+        viewPicCurr: function () {
+            var id = getSelectedRow();
+            if(id == null){
+                return ;
+            }
+            var getRow = $('#jqGrid').getRowData(id);//获取当前的数据行
+            var executionId = getRow.executionId;
+
+            vm.showList = false;
+            vm.showPic = true;
+            vm.src = baseURL + "workFlow/viewTaskImage?taskId="+id;
+            $.ajax({
+                type: "POST",
+                url: baseURL + "workFlow/viewTaskImageCurr?taskId="+id,
+                contentType: "application/json",
+                data: {},
+                success: function(r){
+                    if(r.code == 0){
+                        vm.image = r.image;
+
+                    }else{
+                        alert(r.msg);
+                    }
+                }
+            });
+
         },
         validator: function () {
             return true;
