@@ -3,14 +3,20 @@ package com.gclfax.modules.activiti.service.impl;
 import com.gclfax.modules.activiti.domain.Bill;
 import com.gclfax.modules.activiti.service.IWorkflowService;
 import com.gclfax.modules.activiti.vo.WorkflowBean;
-import org.activiti.engine.IdentityService;
-import org.activiti.engine.RepositoryService;
-import org.activiti.engine.TaskService;
+import org.activiti.engine.*;
+import org.activiti.engine.form.FormProperty;
+import org.activiti.engine.form.TaskFormData;
+import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
+import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.impl.persistence.entity.GroupEntity;
 import org.activiti.engine.impl.persistence.entity.UserEntity;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +43,117 @@ public class WorkflowServiceImplTest {
     private TaskService taskService;
     @Autowired
     private RepositoryService repositoryService;
+    @Autowired
+    private RuntimeService runtimeService;
+    @Autowired
+    private FormService formService;
 
+    /**
+     * 发起流程
+     * @throws Exception
+     */
+    @Test
+    public void testStartProcess() throws Exception {
+        Map<String, Object> variables = new HashMap<String, Object>();
+
+        String key = Bill.class.getName();  //获取业务类的完整路径
+        variables.put("userID", "lbb");// 表示惟一用户
+
+        // 格式：Bill.id的形式（使用流程变量）
+        String objId = key + "." + 1;
+        variables.put("objId", objId);
+        // 6：使用流程定义的key，启动流程实例，同时设置流程变量，同时向正在执行的执行对象表中的字段BUSINESS_KEY添加业务数据，同时让流程关联业务
+        runtimeService.startProcessInstanceByKey("test2", objId, variables);
+    }
+
+    /**
+     * 提交流程
+     * @throws Exception
+     */
+    @Test
+    public void testSubmit() throws Exception{
+        //获取任务ID
+        String taskId = "127506";
+        //获取连线的名称
+        String outcome = "";
+        //批注信息
+        String message = "";
+
+        //使用任务ID，查询任务对象，获取流程流程实例ID
+        Task task = taskService.createTaskQuery()//
+                .taskId(taskId)//使用任务ID查询
+                .singleResult();
+        //获取流程实例ID
+        String processInstanceId = task.getProcessInstanceId();
+
+        Authentication.setAuthenticatedUserId("当前用户名称");//当前用户名称
+        taskService.addComment(taskId, processInstanceId, message);
+
+        Map<String, Object> variables = new HashMap<String,Object>();
+        //根据连线名称，提交任务
+        if(outcome!=null && !outcome.equals("默认提交")){
+            variables.put("outcome", outcome);
+        }
+        //根据业务执行结果，提交任务
+
+        //如果有指定任务执行人
+        variables.put("userid","lbbtd");
+
+        //3：使用任务ID，完成当前人的个人任务，同时流程变量
+        taskService.complete(taskId, variables);
+    }
+
+    /**
+     * 测试用户组查询、用户查询、Form Key 查询、IdentityLink查询
+     * @throws Exception
+     */
+    @Test
+    public void testGroup() throws Exception {
+        //根据group name 查询组
+        Group group = identityService.createGroupQuery().groupName("fh").singleResult();
+        System.out.println("-------------------group:"+group.getId()+"   "+group.getName());
+
+        //根据groupId 查询组用户
+        List<User> userList = identityService.createUserQuery().memberOfGroup("1").list();
+        System.out.println("-------------------userList:"+userList);
+
+        //获取人工节点中定义的formkey
+        TaskFormData formData = formService.getTaskFormData("102539");
+        List<FormProperty> formPropertyList = formData.getFormProperties();
+        System.out.println("-------------------formkey:"+formData.getFormKey() + formPropertyList.size());
+
+        //查询运行时流程人员表信息，可以在监听里面重新制定任务
+        List<IdentityLink> list = taskService.getIdentityLinksForTask("102539");
+        System.out.println("-------------------IdentityLink:"+ list.get(0));
+        for (IdentityLink identityLink :list){
+            if(identityLink.getType().equals("candidate")){
+                System.out.println("-------------------group:" + identityLink.getGroupId());
+            }
+        }
+
+        Task task = taskService.createTaskQuery().processDefinitionId("107501").singleResult();
+        System.out.println("-------------------task:" + task.getId());
+    }
+
+    /**
+     * 测试 FormProperty
+     * @throws Exception
+     */
+    @Test
+    public void testFormProperty() throws Exception{
+        TaskFormData formData = formService.getTaskFormData("102539");
+        List<FormProperty> formPropertyList = formData.getFormProperties();
+        for(FormProperty fp : formPropertyList){
+            System.out.println("-------------------FormProperty:" + fp.getId() + "---" +fp.getName());
+        }
+
+    }
 
     @Test
     public void deployByResourceFile() throws Exception {
+        Task task = taskService.createTaskQuery().processDefinitionId("test2:1:102533").singleResult();
+        System.out.println("-------------------task:" + task.getId());
+
     }
 
     @Test
@@ -143,5 +256,7 @@ public class WorkflowServiceImplTest {
     @Test
     public void findCoordingByTask() throws Exception {
     }
+
+
 
 }
