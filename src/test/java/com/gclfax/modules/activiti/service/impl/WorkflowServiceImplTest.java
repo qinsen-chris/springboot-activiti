@@ -8,14 +8,15 @@ import org.activiti.engine.form.FormProperty;
 import org.activiti.engine.form.TaskFormData;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
+import org.activiti.engine.impl.Page;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.impl.persistence.entity.GroupEntity;
 import org.activiti.engine.impl.persistence.entity.UserEntity;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
 
 /**
  * Create by qs on ${date}
@@ -49,6 +49,18 @@ public class WorkflowServiceImplTest {
     private FormService formService;
 
     /**
+     * 部署
+     * @throws Exception
+     */
+    @Test
+    public void deployByResourceFile() throws Exception {
+        String resourceFilename = "formtest.bpmn";
+        String processName = "测试form";
+        repositoryService.createDeployment().addClasspathResource("processes/"+resourceFilename).name(processName).deploy();
+
+    }
+
+    /**
      * 发起流程
      * @throws Exception
      */
@@ -57,13 +69,14 @@ public class WorkflowServiceImplTest {
         Map<String, Object> variables = new HashMap<String, Object>();
 
         String key = Bill.class.getName();  //获取业务类的完整路径
-        variables.put("userID", "lbb");// 表示惟一用户
+        variables.put("userID", "bb");// 表示惟一用户
 
         // 格式：Bill.id的形式（使用流程变量）
         String objId = key + "." + 1;
         variables.put("objId", objId);
         // 6：使用流程定义的key，启动流程实例，同时设置流程变量，同时向正在执行的执行对象表中的字段BUSINESS_KEY添加业务数据，同时让流程关联业务
-        runtimeService.startProcessInstanceByKey("test2", objId, variables);
+        ProcessInstance pi = runtimeService.startProcessInstanceByKey("formtest", objId, variables);
+        System.out.println("-------------------ProcessInstance id:" + pi.getId() +" -----processInstanceId" + pi.getProcessInstanceId());
     }
 
     /**
@@ -122,7 +135,7 @@ public class WorkflowServiceImplTest {
         List<FormProperty> formPropertyList = formData.getFormProperties();
         System.out.println("-------------------formkey:"+formData.getFormKey() + formPropertyList.size());
 
-        //查询运行时流程人员表信息，可以在监听里面重新制定任务
+        //查询运行时流程人员表信息，可以在监听里面重新指定任务
         List<IdentityLink> list = taskService.getIdentityLinksForTask("102539");
         System.out.println("-------------------IdentityLink:"+ list.get(0));
         for (IdentityLink identityLink :list){
@@ -136,28 +149,95 @@ public class WorkflowServiceImplTest {
     }
 
     /**
-     * 测试 FormProperty
+     * 测试 FormProperty ，查询当前任务节点中定义的 FormProperty
      * @throws Exception
      */
     @Test
     public void testFormProperty() throws Exception{
-        TaskFormData formData = formService.getTaskFormData("102539");
+        TaskFormData formData = formService.getTaskFormData("145006");
+        List<FormProperty> formPropertyList = formData.getFormProperties();
+        for(FormProperty fp : formPropertyList){
+            System.out.println("-------------------FormProperty:" + fp.getId() + "---" +fp.getName());
+        }
+    }
+
+    /**
+     * 测试流程变量
+     * @throws Exception
+     */
+    @Test
+    public void testVariable() throws Exception{
+        TaskFormData formData = formService.getTaskFormData("145006");
         List<FormProperty> formPropertyList = formData.getFormProperties();
         for(FormProperty fp : formPropertyList){
             System.out.println("-------------------FormProperty:" + fp.getId() + "---" +fp.getName());
         }
 
-    }
-
-    @Test
-    public void deployByResourceFile() throws Exception {
-        Task task = taskService.createTaskQuery().processDefinitionId("test2:1:102533").singleResult();
-        System.out.println("-------------------task:" + task.getId());
 
     }
 
+    /**
+     * 执行流 的查询，根据流程定义key,
+     * @throws Exception
+     */
     @Test
-    public void deployeByZip() throws Exception {
+    public void testExecution() throws Exception {
+        String processDefinitionKey = "formtest";
+        List<Execution> executionList = runtimeService.createExecutionQuery().processDefinitionKey(processDefinitionKey).list();
+        for (Execution execution : executionList){
+            System.out.println("------------------execution:" + execution.getProcessInstanceId());
+        }
+        Assert.assertTrue(executionList.size()>0);
+    }
+
+    /**
+     * formService 启动流程
+     * @throws Exception
+     */
+    @Test
+    public void testFormStartProcess() throws Exception{
+        String processDefinitionId = "";
+        String businessKey = "88";
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("userid","99");
+        properties.put("username","100");
+        ProcessInstance pi =  formService.submitStartFormData(processDefinitionId,businessKey,properties);
+        System.out.println("-------------------ProcessInstance:" +pi.getName());
+    }
+    /**
+     * 根据流程类型和用用户查询任务
+     * @throws Exception
+     */
+    @Test
+    public void testQueryTaskByCondition() throws Exception{
+        //List<Task> taskList = taskService.createNativeTaskQuery().sql("").list();
+        List<Task> taskList = taskService.createTaskQuery().processDefinitionKey("test2").taskCandidateOrAssigned("fh").list();
+        System.out.println(taskList);
+    }
+
+    /**
+     * 根据流程类型和用用户查询任务
+     * @throws Exception
+     */
+    @Test
+    public void testQueryTaskBySQL() throws Exception{
+
+        String userId = "fh1";
+        String sql = "select distinct res.* from act_ru_task res " +
+                "left join act_ru_identitylink ide on ide.TASK_ID_ = res.ID_ " +
+                "LEFT JOIN act_ru_execution re on re.ID_ = res.EXECUTION_ID_ " +
+                "LEFT JOIN act_re_procdef rp on rp.ID_ = re.PROC_DEF_ID_ " +
+                "where (res.ASSIGNEE_ = #{userid} or (res.ASSIGNEE_ is NULL and (ide.USER_ID_ = #{userid} or ide.GROUP_ID_ in (select mem.GROUP_ID_ from act_id_membership mem where mem.USER_ID_=#{userid} )) )) " +
+                "ORDER BY res.CREATE_TIME_ DESC  " ;
+        List<Task> taskList = taskService.createNativeTaskQuery().sql(sql).parameter("userid",userId).list();
+        System.out.println(taskList);
+    }
+
+
+    @Test
+    public void deployeTaskVariables() throws Exception {
+        Map<String, Object> resultMap = taskService.getVariables("145006");
+        System.out.println(resultMap);
     }
 
     @Test
